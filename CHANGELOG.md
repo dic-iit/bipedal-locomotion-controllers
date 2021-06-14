@@ -46,6 +46,7 @@ All notable changes to this project are documented in this file.
 - Implement a matioCpp-based strain2 sensors' FT-IMU logger example device (https://github.com/dic-iit/bipedal-locomotion-framework/pull/326)
 - Implement `TomlImplementation` in `ParametersHandler` (https://github.com/dic-iit/bipedal-locomotion-framework/pull/328)
 - Implement blf_calibration_delta_updater.py application (https://github.com/dic-iit/bipedal-locomotion-framework/pull/332)
+- Add new Advanceable exposing `UnicyclePlanner` (https://github.com/dic-iit/bipedal-locomotion-framework/pull/320)
 
 ### Changed
 - Move all the Contacts related classes in Contacts component (https://github.com/dic-iit/bipedal-locomotion-framework/pull/204)

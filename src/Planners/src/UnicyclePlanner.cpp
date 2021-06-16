@@ -86,6 +86,12 @@ public:
         bool resetStartingFootIfStill = false;
     } gait;
 
+    struct
+    {
+        std::string left = "left";
+        std::string right = "right";
+    } names;
+
     UnicyclePlannerOutput outputRef;
     std::optional<UnicyclePlannerOutput> output = std::nullopt;
 
@@ -317,6 +323,20 @@ bool Planners::UnicyclePlanner::initialize(
     m_pImpl->planner->addTerminalStep(m_pImpl->gait.terminalStep);
     m_pImpl->planner->resetStartingFootIfStill(m_pImpl->gait.resetStartingFootIfStill);
 
+    // =====
+    // names
+    // =====
+
+    if (!ptr->getParameter("left_foot_name", m_pImpl->names.left))
+    {
+        log()->info("{} Using default left_foot_name={}.", logPrefix, m_pImpl->names.left);
+    }
+
+    if (!ptr->getParameter("right_foot_name", m_pImpl->names.right))
+    {
+        log()->info("{} Using default right_foot_name={}.", logPrefix, m_pImpl->names.right);
+    }
+
     // =============================
     // UnicyclePlanner configuration
     // =============================
@@ -437,10 +457,10 @@ bool Planners::UnicyclePlanner::advance()
     m_pImpl->output = std::nullopt;
 
     m_pImpl->left = std::make_shared<FootPrint>();
-    m_pImpl->left->setFootName("left");
+    m_pImpl->left->setFootName(m_pImpl->names.left);
 
     m_pImpl->right = std::make_shared<FootPrint>();
-    m_pImpl->right->setFootName("right");
+    m_pImpl->right->setFootName(m_pImpl->names.right);
 
     if (!m_pImpl->planner->computeNewSteps(m_pImpl->left,
                                            m_pImpl->right,
@@ -513,8 +533,8 @@ bool Planners::UnicyclePlanner::advance()
     }
 
     m_pImpl->output = std::make_optional<UnicyclePlannerOutput>();
-    m_pImpl->output->left.setDefaultName("left");
-    m_pImpl->output->right.setDefaultName("right");
+    m_pImpl->output->left.setDefaultName(m_pImpl->names.left);
+    m_pImpl->output->right.setDefaultName(m_pImpl->names.right);
 
     m_pImpl->output->left = *leftContactList;
     m_pImpl->output->right = *rightContactList;

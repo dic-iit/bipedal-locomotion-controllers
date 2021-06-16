@@ -131,6 +131,8 @@ public:
      * |      `swingLeft`       |      bool      |    false     |    No     |     Perform the first step with the left foot      |
      * |     `terminalStep`     |      bool      |     true     |    No     |   Add a terminal step at the end of the horizon    |
      * | `startAlwaysSameFoot`  |      bool      |    false     |    No     |       Restart with the default foot if still       |
+     * |    `left_foot_name`    |     string     |     left     |    No     |               Name of the left foot                |
+     * |   `right_foot_name`    |     string     |    right     |    No     |               Name of the right foot               |
      *
      * @param handler Pointer to the parameter handler.
      * @return True in case of success, false otherwise.

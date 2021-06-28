@@ -1,0 +1,21 @@
+[build-system]
+build-backend = "setuptools.build_meta"
+requires = [
+    "wheel",
+    "setuptools>=45",
+    "setuptools_scm[toml]>=6.0",
+    "cmake>=3.14",
+    "ninja",
+    "cmake-build-extension",
+    "pybind11",
+    "idyntree>=3.1.0",
+    "casadi",
+    "yarp_middleware @ git+https://github.com/diegoferigo/yarp@feature/setup.py#egg=yarp_middleware&subdirectory=scripts/pip",
+    "manifpy @ git+https://github.com/diegoferigo/manif@feature/setuptools",
+]
+
+[tool.setuptools_scm]
+local_scheme = "dirty-tag"
+
+[tool.cibuildwheel]
+build-frontend = "build"

@@ -10,6 +10,7 @@ requires = [
     "pybind11",
     "idyntree>=3.1.0",
     "casadi",
+    "ycm_cmake_modules",
     "yarp_middleware @ git+https://github.com/diegoferigo/yarp@feature/setup.py#egg=yarp_middleware&subdirectory=scripts/pip",
     "manifpy @ git+https://github.com/diegoferigo/manif@feature/setuptools",
 ]
@@ -17,5 +18,5 @@ requires = [
 [tool.setuptools_scm]
 local_scheme = "dirty-tag"
 
-[tool.cibuildwheel]
-build-frontend = "build"
+#[tool.cibuildwheel]
+#build-frontend = "build"

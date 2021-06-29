@@ -25,13 +25,20 @@ jobs:
         with:
           python-version: 3.8
 
+      - name: Update pip
+        run: python -m pip install --upgrade pip
+
       - name: Install pypa/build
         run: pip install build
 
       - name: Install build dependencies
         run: |
           sudo apt-get update
+          # yarp
           sudo apt-get install -y libace-dev swig
+          # idyntree
+          sudo apt-get install -y libassimp-dev libxml2-dev coinor-libipopt-dev
+          # blf
           sudo apt-get install -y build-essential libspdlog-dev libeigen3-dev libqhull-dev
 
       - name: Build sdist
@@ -82,7 +89,6 @@ jobs:
       - name: Install cibuildwheel
         run: pip install git+https://github.com/pypa/cibuildwheel.git
 
-      # Note: using clang-7 to build the yarp dependency
       - name: Build wheels
         run: python -m cibuildwheel --output-dir wheelhouse
         env:
@@ -92,10 +98,25 @@ jobs:
           CIBW_ENVIRONMENT_LINUX: "AUDITWHEEL_PLAT=manylinux_2_24_x86_64 CC=clang-7 CXX=clang++-7"
           CIBW_BEFORE_ALL_LINUX: |
               apt-get update &&\
-              apt-get install -y clang-7 libspdlog-dev libeigen3-dev libqhull-dev
+              apt-get install -y libace-dev &&\
+              apt-get install -y libassimp-dev libxml2-dev coinor-libipopt-dev &&\
+              apt-get install -y clang-7 libspdlog-dev libeigen3-dev &&\
+              apt-get install -y git &&\
+              git clone https://github.com/qhull/qhull /tmp/qhull &&\
+              cmake -B /tmp/qhull/build -S /tmp/qhull &&\
+              cd /tmp/qhull/build && make install &&\
+              git clone --recursive https://github.com/oxfordcontrol/osqp /tmp/osqp &&\
+              cmake -B /tmp/osqp/build -S /tmp/osqp -DBUILD_SHARED_LIBS:BOOL=OFF &&\
+              cmake --build /tmp/osqp/build --target install &&\
+              git clone https://github.com/robotology/osqp-eigen /tmp/osqp-eigen &&\
+              cmake -B /tmp/osqp-eigen/build -S /tmp/osqp-eigen -DBUILD_SHARED_LIBS:BOOL=OFF &&\
+              cmake --build /tmp/osqp-eigen/build --target install &&\
+              git clone https://github.com/nlohmann/json /tmp/json &&\
+              cmake -B /tmp/json/build -S /tmp/json -DBUILD_SHARED_LIBS:BOOL=OFF &&\
+              cmake --build /tmp/json/build --target install
+          CIBW_BEFORE_BUILD_LINUX: python -m pip install --upgrade pip
           CIBW_TEST_REQUIRES: pytest
           CIBW_TEST_COMMAND: "pytest $(find bindings/python/ -name 'test_*.py')"
-          SWIG_EXECUTABLE: "$(which swig)"
 
       - name: Inspect wheelhouse folder
         run: ls -lah wheelhouse/

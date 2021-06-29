@@ -9,7 +9,12 @@ from cmake_build_extension import BuildExtension, CMakeExtension
 from setuptools import setup
 
 if "CIBUILDWHEEL" in os.environ and os.environ["CIBUILDWHEEL"] == "1":
-    CIBW_CMAKE_OPTIONS = ["-DCMAKE_INSTALL_LIBDIR=lib"]
+    CIBW_CMAKE_OPTIONS = [
+        # Prevent CMake to use lib64 on Debian Stretch
+        "-DCMAKE_INSTALL_LIBDIR=lib",
+        # Prevent CMake finding the osqp shipped with the CasADI wheel
+        "-Dosqp_DIR=/usr/local/lib/cmake/osqp"
+    ]
 else:
     CIBW_CMAKE_OPTIONS = []
 
@@ -20,11 +25,20 @@ setup(
         CMakeExtension(
             name="BlfCMakeProject",
             install_prefix="bipedal_locomotion_framework",
-            cmake_depends_on=["idyntree", "pybind11", "yarp", "manifpy", "casadi"],
+            cmake_depends_on=[
+                "idyntree",
+                "pybind11",
+                "ycm_cmake_modules",
+                "yarp",
+                "manifpy",
+                "casadi",
+            ],
             disable_editable=True,
             cmake_configure_options=[
                 f"-DPython3_EXECUTABLE:PATH={sys.executable}",
                 "-DFRAMEWORK_PACKAGE_FOR_PYPI:BOOL=ON",
+                # *_USE_*
+                "-DFRAMEWORK_USE_Catch2:BOOL=OFF",
                 "-DFRAMEWORK_USE_LieGroupControllers:BOOL=OFF",
                 "-DFRAMEWORK_USE_OpenCV:BOOL=OFF",
                 "-DFRAMEWORK_USE_OsqpEigen:BOOL=ON",
@@ -37,14 +51,19 @@ setup(
                 "-DFRAMEWORK_USE_cppad:BOOL=OFF",
                 "-DFRAMEWORK_USE_manif:BOOL=ON",
                 "-DFRAMEWORK_USE_matioCpp:BOOL=OFF",
+                "-DFRAMEWORK_USE_nlohmann_json:BOOL=ON",
                 "-DFRAMEWORK_USE_pybind11:BOOL=ON",
                 "-DFRAMEWORK_USE_realsense2:BOOL=OFF",
-                "-DFRAMEWORK_COMPILE_System:BOOL=ON",
+                "-DFRAMEWORK_USE_tomlplusplus:BOOL=OFF",
+                # *_COMPILE_*
+                "-DFRAMEWORK_COMPILE_Contact:BOOL=ON",
+                "-DFRAMEWORK_COMPILE_Math:BOOL=ON",
+                "-DFRAMEWORK_COMPILE_PYTHON_BINDINGS:BOOL=ON",
                 "-DFRAMEWORK_COMPILE_Planners:BOOL=ON",
                 "-DFRAMEWORK_COMPILE_RobotInterface:BOOL=ON",
-                "-DFRAMEWORK_COMPILE_YarpUtilities:BOOL=ON",
+                "-DFRAMEWORK_COMPILE_System:BOOL=ON",
                 "-DFRAMEWORK_COMPILE_YarpImplementation:BOOL=ON",
-                "-DFRAMEWORK_COMPILE_PYTHON_BINDINGS:BOOL=ON",
+                "-DFRAMEWORK_COMPILE_YarpUtilities:BOOL=ON",
             ]
             + CIBW_CMAKE_OPTIONS,
         )

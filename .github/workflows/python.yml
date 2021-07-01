@@ -87,7 +87,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: Install cibuildwheel
-        run: pip install git+https://github.com/pypa/cibuildwheel.git
+        run: pip install --pre cibuildwheel
 
       - name: Build wheels
         run: python -m cibuildwheel --output-dir wheelhouse
